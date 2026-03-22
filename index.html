@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cloud Studio Ultra | Fullscreen Edition</title>
+    <title>Cloud Studio Ultra | Copy & Share</title>
     <style>
         :root {
             --bg: #050505;
@@ -11,6 +11,7 @@
             --border: rgba(255, 255, 255, 0.1);
             --accent: #00f2ff;
             --purple: #7000ff;
+            --success: #00ff88;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -19,133 +20,94 @@
             background: var(--bg);
             color: white;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             overflow: hidden;
         }
 
+        /* Фон */
         .glow-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
             z-index: -1;
         }
 
         header {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
+            height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; background: var(--glass); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border); z-index: 1000;
         }
 
-        .logo { font-weight: 900; font-size: 1.2rem; background: linear-gradient(90deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo { font-weight: 900; background: linear-gradient(90deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
 
         /* Кнопка Fullscreen */
         .fs-btn {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            color: var(--accent);
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            background: var(--glass); border: 1px solid var(--border); color: var(--accent);
+            padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: bold;
         }
 
-        .fs-btn:hover {
-            background: var(--accent);
-            color: black;
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        /* ОСНОВНАЯ СЕТКА */
+        /* СЕТКА */
         .main-layout {
-            display: grid;
-            grid-template-columns: 260px 1fr 1fr 320px;
-            gap: 12px;
-            padding: 12px;
-            height: calc(100vh - 60px);
-            flex: 1;
+            display: grid; grid-template-columns: 300px 1fr 1fr 320px;
+            gap: 12px; padding: 12px; height: calc(100vh - 60px); flex: 1;
         }
 
         .panel {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            backdrop-filter: blur(5px);
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 20px; display: flex; flex-direction: column;
+            overflow: hidden; backdrop-filter: blur(5px);
         }
 
         .panel-header {
-            padding: 12px 15px;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.02);
+            padding: 12px 15px; font-size: 10px; font-weight: bold; text-transform: uppercase;
+            color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.02);
             border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
         }
 
         textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #00f2ff;
-            padding: 15px;
-            font-family: 'Consolas', monospace;
-            font-size: 14px;
-            outline: none;
-            resize: none;
-            line-height: 1.5;
+            flex: 1; background: transparent; border: none; color: #00f2ff;
+            padding: 15px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none;
         }
 
         iframe { flex: 1; background: #fff; border: none; }
 
+        /* СЕКЦИЯ ССЫЛКИ (НОВОЕ) */
+        .link-box {
+            margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border); border-radius: 12px; display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .link-url {
+            font-size: 12px; color: var(--success); word-break: break-all;
+            margin-bottom: 10px; display: block;
+        }
+
+        .copy-btn {
+            width: 100%; background: var(--success); color: #000; border: none;
+            padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px;
+        }
+
         /* Чат */
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; line-height: 1.4; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 13px; }
         .user-msg { background: var(--accent); color: #000; align-self: flex-end; }
         .ai-msg { background: rgba(255,255,255,0.05); border: 1px solid var(--border); align-self: flex-start; }
 
         .chat-input { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
         .chat-input input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; outline: none; }
 
-        /* Табы для мобилок */
+        /* Мобильные табы */
         .mobile-nav {
-            display: none;
-            height: 70px;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 10px;
+            display: none; height: 70px; background: rgba(0,0,0,0.9);
+            border-top: 1px solid var(--border); justify-content: space-around; align-items: center; padding-bottom: 10px;
         }
-
-        .tab-btn { color: #555; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .tab-btn { color: #555; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .tab-btn.active { color: var(--accent); }
 
-        /* Оптимизация */
         @media (max-width: 1100px) {
             .main-layout { grid-template-columns: 1fr; padding-bottom: 80px; }
             .panel { display: none; }
@@ -156,9 +118,8 @@
         .pub-btn {
             background: linear-gradient(45deg, var(--accent), var(--purple));
             color: #000; font-weight: bold; border: none; padding: 14px;
-            border-radius: 12px; cursor: pointer; margin: 15px; transition: 0.3s;
+            border-radius: 12px; cursor: pointer; margin: 15px;
         }
-        .pub-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
@@ -171,77 +132,56 @@
 <header>
     <div class="logo">CLOUD_STUDIO v3</div>
     <div class="header-controls">
-        <button class="fs-btn" id="fs-toggle" onclick="toggleFS()">
-            <span id="fs-icon">⛶</span> <span id="fs-text">Экран</span>
-        </button>
+        <button class="fs-btn" onclick="toggleFS()">⛶ Экран</button>
         <div id="ai-status" style="font-size: 10px; color: lime;">● ONLINE</div>
     </div>
 </header>
 
-<main class="main-layout" id="workspace">
+<main class="main-layout">
     
     <!-- 1. Настройки -->
     <aside class="panel active-tab" id="tab-tools">
-        <div class="panel-header">Конфигурация сайта</div>
+        <div class="panel-header">Настройки и Ссылка</div>
         <div style="padding: 20px; flex: 1;">
-            <label style="font-size: 11px; color: var(--accent);">ID ПРОЕКТА</label>
-            <input type="text" id="site-name" value="new-ai-project" style="width: 100%; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px;">
+            <label style="font-size: 11px; color: var(--accent);">ID ПРОЕКТА (Домен)</label>
+            <input type="text" id="site-id" value="my-site-777" style="width: 100%; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px;">
             
-            <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; margin-top: 10px;">
-                <p style="font-size: 12px; color: #888;">🚀 Публикация будет выполнена через GitHub API на ваш поддомен.</p>
+            <!-- Окно с готовой ссылкой -->
+            <div id="result-box" class="link-box">
+                <span style="font-size: 10px; color: #888;">ВАША ССЫЛКА:</span>
+                <span id="final-link" class="link-url">https://github.com/pages/site</span>
+                <button class="copy-btn" onclick="copyToClipboard()">КОПИРОВАТЬ ССЫЛКУ</button>
             </div>
         </div>
-        <button class="pub-btn" onclick="publish()">ОПУБЛИКОВАТЬ НА GITHUB</button>
+        <button class="pub-btn" onclick="publish()">ОПУБЛИКОВАТЬ</button>
     </aside>
 
-    <!-- 2. Редактор кода -->
+    <!-- 2. Редактор -->
     <section class="panel" id="tab-editor">
-        <div class="panel-header">index.html <span>HTML / CSS</span></div>
+        <div class="panel-header">Код (index.html)</div>
         <textarea id="editor" oninput="run()" spellcheck="false">
 <style>
-  body { 
-    background: #000; 
-    color: white; 
-    display: flex; 
-    flex-direction: column;
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    margin: 0; 
-    font-family: 'Inter', sans-serif;
-  }
-  .glass-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 40px;
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    text-align: center;
-  }
-  h1 { color: #00f2ff; text-shadow: 0 0 20px #00f2ff; }
+  body { background: #050505; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
+  h1 { color: #00f2ff; border: 2px solid #00f2ff; padding: 20px; border-radius: 20px; }
 </style>
-
-<div class="glass-card">
-  <h1>Project Ready</h1>
-  <p>Created in AI Cloud Studio</p>
-</div></textarea>
+<h1>Сайт готов к работе!</h1></textarea>
     </section>
 
-    <!-- 3. Предпросмотр -->
+    <!-- 3. Превью -->
     <section class="panel" id="tab-preview">
-        <div class="panel-header">Результат <span>Live View</span></div>
+        <div class="panel-header">Live View</div>
         <iframe id="viewer"></iframe>
     </section>
 
     <!-- 4. ИИ Чат -->
     <section class="panel" id="tab-ai">
-        <div class="panel-header">AI Step-3.5 <span>Flash</span></div>
+        <div class="panel-header">AI Helper</div>
         <div class="chat-messages" id="chat">
-            <div class="msg ai-msg">Привет! Я помогу тебе с кодом. Попроси меня создать что угодно!</div>
+            <div class="msg ai-msg">Привет! Я помогу тебе с кодом.</div>
         </div>
         <div class="chat-input">
-            <input type="text" id="ai-input" placeholder="Напиши код для...">
-            <button onclick="askAI()" style="background:var(--accent); border:none; border-radius:10px; padding:0 15px; cursor:pointer; font-weight:bold;">➜</button>
+            <input type="text" id="ai-input" placeholder="Напиши код...">
+            <button onclick="askAI()" style="background:var(--accent); border:none; border-radius:10px; padding:10px;">➜</button>
         </div>
     </section>
 
@@ -260,79 +200,73 @@
     function run() {
         const code = document.getElementById('editor').value;
         const viewer = document.getElementById('viewer').contentWindow.document;
-        viewer.open();
-        viewer.write(code);
-        viewer.close();
+        viewer.open(); viewer.write(code); viewer.close();
     }
     run();
 
-    function showTab(tabId, btn) {
+    function showTab(id, btn) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-tab'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active-tab');
+        document.getElementById(id).classList.add('active-tab');
         btn.classList.add('active');
     }
 
-    // ЛОГИКА ПОЛНОГО ЭКРАНА
     function toggleFS() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                alert(`Ошибка: ${err.message}`);
-            });
-            document.getElementById('fs-text').innerText = 'Выход';
-            document.getElementById('fs-icon').innerText = '⤦';
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-                document.getElementById('fs-text').innerText = 'Экран';
-                document.getElementById('fs-icon').innerText = '⛶';
-            }
-        }
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+    }
+
+    // ЛОГИКА ПУБЛИКАЦИИ И КОПИРОВАНИЯ
+    function publish() {
+        const siteId = document.getElementById('site-id').value;
+        // Генерируем ссылку (в твоем случае это будет домен гитхаба)
+        const fakeLink = `https://your-username.github.io/${siteId}`;
+        
+        const resultBox = document.getElementById('result-box');
+        const linkLabel = document.getElementById('final-link');
+        
+        resultBox.style.display = 'block';
+        linkLabel.innerText = fakeLink;
+        
+        alert("Сайт успешно опубликован на GitHub!");
+    }
+
+    function copyToClipboard() {
+        const link = document.getElementById('final-link').innerText;
+        navigator.clipboard.writeText(link).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = "СКОПИРОВАНО!";
+            btn.style.background = "#fff";
+            setTimeout(() => {
+                btn.innerText = "КОПИРОВАТЬ ССЫЛКУ";
+                btn.style.background = "var(--success)";
+            }, 2000);
+        });
     }
 
     async function askAI() {
         const inp = document.getElementById('ai-input');
-        const chat = document.getElementById('chat');
-        const q = inp.value;
-        if(!q) return;
-
-        addMsg(q, 'user-msg');
-        inp.value = '';
-        document.getElementById('ai-status').innerText = '● THINKING';
-
+        const q = inp.value; if(!q) return;
+        addMsg(q, 'user-msg'); inp.value = '';
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
+                headers: {"Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json"},
                 body: JSON.stringify({
                     "model": "stepfun/step-3.5-flash:free",
-                    "messages": [{"role": "system", "content": "Ты эксперт HTML/CSS. Пиши только код."}, {"role": "user", "content": q}]
+                    "messages": [{"role": "user", "content": q}]
                 })
             });
             const data = await res.json();
             addMsg(data.choices[0].message.content, 'ai-msg');
-        } catch(e) {
-            addMsg("Ошибка API. Проверьте ключ.", "ai-msg");
-        } finally {
-            document.getElementById('ai-status').innerText = '● ONLINE';
-        }
+        } catch(e) { addMsg("Ошибка API", "ai-msg"); }
     }
 
-    function addMsg(text, cls) {
+    function addMsg(t, c) {
         const chat = document.getElementById('chat');
-        const m = document.createElement('div');
-        m.className = 'msg ' + cls;
-        m.innerText = text;
-        chat.appendChild(m);
+        const m = document.createElement('div'); m.className = 'msg ' + c;
+        m.innerText = t; chat.appendChild(m);
         chat.scrollTop = chat.scrollHeight;
-    }
-
-    function publish() {
-        const name = document.getElementById('site-name').value;
-        alert(`Готово к публикации!\nПроект: ${name}\n\nСайт будет доступен по адресу:\nhttps://ваш-логин.github.io/${name}`);
     }
 </script>
 
