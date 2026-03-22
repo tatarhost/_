@@ -3,33 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cloud Studio Ultra | Copy & Share</title>
+    <title>TatarHost Studio | Создание сайтов</title>
     <style>
         :root {
-            --bg: #050505;
+            --bg: #030303;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
             --accent: #00f2ff;
-            --purple: #7000ff;
+            --magenta: #ff00e1;
             --success: #00ff88;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         
-        body {
-            background: var(--bg);
-            color: white;
-            height: 100vh;
-            display: flex; flex-direction: column;
-            overflow: hidden;
-        }
+        body { background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Фон */
-        .glow-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
-            z-index: -1;
-        }
+        .glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #0d0d0d 0%, #000 100%); z-index: -1; }
 
         header {
             height: 60px; display: flex; align-items: center; justify-content: space-between;
@@ -37,74 +26,42 @@
             border-bottom: 1px solid var(--border); z-index: 1000;
         }
 
-        .logo { font-weight: 900; background: linear-gradient(90deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo { font-weight: 900; letter-spacing: 1px; background: linear-gradient(90deg, var(--accent), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .header-controls { display: flex; align-items: center; gap: 15px; }
-
-        /* Кнопка Fullscreen */
-        .fs-btn {
-            background: var(--glass); border: 1px solid var(--border); color: var(--accent);
-            padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: bold;
-        }
-
-        /* СЕТКА */
+        /* ОСНОВНОЙ ГРИД */
         .main-layout {
-            display: grid; grid-template-columns: 300px 1fr 1fr 320px;
+            display: grid; grid-template-columns: 320px 1fr 1fr 320px;
             gap: 12px; padding: 12px; height: calc(100vh - 60px); flex: 1;
         }
 
-        .panel {
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 20px; display: flex; flex-direction: column;
-            overflow: hidden; backdrop-filter: blur(5px);
-        }
+        .panel { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(10px); }
+        .panel-header { padding: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
 
-        .panel-header {
-            padding: 12px 15px; font-size: 10px; font-weight: bold; text-transform: uppercase;
-            color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--border);
-        }
-
-        textarea {
-            flex: 1; background: transparent; border: none; color: #00f2ff;
-            padding: 15px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none;
-        }
-
+        textarea { flex: 1; background: transparent; border: none; color: var(--accent); padding: 15px; font-family: 'Consolas', monospace; font-size: 14px; outline: none; resize: none; }
         iframe { flex: 1; background: #fff; border: none; }
 
-        /* СЕКЦИЯ ССЫЛКИ (НОВОЕ) */
-        .link-box {
-            margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border); border-radius: 12px; display: none;
-            animation: slideIn 0.3s ease;
+        /* ИНТЕРФЕЙС ПУБЛИКАЦИИ */
+        .publish-area { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { font-size: 10px; color: var(--accent); display: block; margin-bottom: 8px; }
+        input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 12px; outline: none; }
+
+        .result-card {
+            background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent);
+            border-radius: 15px; padding: 15px; margin-top: 10px; display: none;
+            animation: fadeIn 0.4s ease;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .site-url { font-size: 11px; color: var(--success); word-break: break-all; margin-bottom: 15px; display: block; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
 
-        .link-url {
-            font-size: 12px; color: var(--success); word-break: break-all;
-            margin-bottom: 10px; display: block;
-        }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        .btn-pub { background: linear-gradient(45deg, var(--accent), var(--magenta)); color: black; }
+        .btn-copy { background: var(--success); color: black; font-size: 12px; }
+        .btn-visit { background: white; color: black; font-size: 12px; text-decoration: none; display: block; text-align: center; }
 
-        .copy-btn {
-            width: 100%; background: var(--success); color: #000; border: none;
-            padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px;
-        }
-
-        /* Чат */
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 13px; }
-        .user-msg { background: var(--accent); color: #000; align-self: flex-end; }
-        .ai-msg { background: rgba(255,255,255,0.05); border: 1px solid var(--border); align-self: flex-start; }
-
-        .chat-input { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .chat-input input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; outline: none; }
-
-        /* Мобильные табы */
-        .mobile-nav {
-            display: none; height: 70px; background: rgba(0,0,0,0.9);
-            border-top: 1px solid var(--border); justify-content: space-around; align-items: center; padding-bottom: 10px;
-        }
+        /* МОБИЛЬНАЯ ОПТИМИЗАЦИЯ */
+        .mobile-nav { display: none; height: 70px; background: #000; border-top: 1px solid var(--border); justify-content: space-around; align-items: center; }
         .tab-btn { color: #555; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .tab-btn.active { color: var(--accent); }
 
@@ -115,100 +72,107 @@
             .mobile-nav { display: flex; }
         }
 
-        .pub-btn {
-            background: linear-gradient(45deg, var(--accent), var(--purple));
-            color: #000; font-weight: bold; border: none; padding: 14px;
-            border-radius: 12px; cursor: pointer; margin: 15px;
-        }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        /* Чат */
+        .chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 12px; font-size: 13px; max-width: 85%; }
+        .ai { background: rgba(255,255,255,0.05); border: 1px solid var(--border); }
+        .user { background: var(--accent); color: black; align-self: flex-end; }
     </style>
 </head>
 <body>
 
-<div class="glow-bg"></div>
+<div class="glow"></div>
 
 <header>
-    <div class="logo">CLOUD_STUDIO v3</div>
-    <div class="header-controls">
-        <button class="fs-btn" onclick="toggleFS()">⛶ Экран</button>
-        <div id="ai-status" style="font-size: 10px; color: lime;">● ONLINE</div>
+    <div class="logo">TATAR_HOST STUDIO</div>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="toggleFS()" style="background:none; border:1px solid var(--border); color:white; padding:5px 10px; border-radius:8px; font-size:10px; cursor:pointer;">FULLSCREEN</button>
+        <div id="status" style="font-size: 10px; color: lime; align-self: center;">● ONLINE</div>
     </div>
 </header>
 
 <main class="main-layout">
     
-    <!-- 1. Настройки -->
-    <aside class="panel active-tab" id="tab-tools">
-        <div class="panel-header">Настройки и Ссылка</div>
-        <div style="padding: 20px; flex: 1;">
-            <label style="font-size: 11px; color: var(--accent);">ID ПРОЕКТА (Домен)</label>
-            <input type="text" id="site-id" value="my-site-777" style="width: 100%; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px;">
-            
-            <!-- Окно с готовой ссылкой -->
-            <div id="result-box" class="link-box">
-                <span style="font-size: 10px; color: #888;">ВАША ССЫЛКА:</span>
-                <span id="final-link" class="link-url">https://github.com/pages/site</span>
-                <button class="copy-btn" onclick="copyToClipboard()">КОПИРОВАТЬ ССЫЛКУ</button>
+    <!-- ПАНЕЛЬ 1: ИНФО И ПУБЛИКАЦИЯ -->
+    <aside class="panel active-tab" id="tab-info">
+        <div class="panel-header">Конфигурация сайта</div>
+        <div class="publish-area">
+            <div class="input-group">
+                <label>ИМЯ ВАШЕГО САЙТА (ЛАТИНИЦЕЙ)</label>
+                <input type="text" id="project-name" placeholder="my-awesome-site" oninput="updateLinkHint()">
+                <p id="link-hint" style="font-size: 9px; color: #666; margin-top: 5px;">Ссылка: https://tatarhost.github.io/_/...</p>
+            </div>
+
+            <button class="btn btn-pub" onclick="publish()">ОПУБЛИКОВАТЬ САЙТ</button>
+
+            <div id="result-card" class="result-card">
+                <p style="font-size: 10px; margin-bottom: 5px;">ГОТОВО! ВАШ САЙТ ДОСТУПЕН:</p>
+                <span id="final-url" class="site-url"></span>
+                <button class="btn btn-copy" onclick="copyLink()">СКОПИРОВАТЬ ССЫЛКУ</button>
+                <a id="visit-link" href="#" target="_blank" class="btn btn-visit">ОТКРЫТЬ САЙТ</a>
             </div>
         </div>
-        <button class="pub-btn" onclick="publish()">ОПУБЛИКОВАТЬ</button>
     </aside>
 
-    <!-- 2. Редактор -->
-    <section class="panel" id="tab-editor">
-        <div class="panel-header">Код (index.html)</div>
-        <textarea id="editor" oninput="run()" spellcheck="false">
+    <!-- ПАНЕЛЬ 2: РЕДАКТОР -->
+    <section class="panel" id="tab-code">
+        <div class="panel-header">Редактор кода</div>
+        <textarea id="editor" oninput="render()" spellcheck="false">
 <style>
-  body { background: #050505; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
-  h1 { color: #00f2ff; border: 2px solid #00f2ff; padding: 20px; border-radius: 20px; }
+  body { background: #000; color: #0ff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  h1 { border: 2px solid #0ff; padding: 20px; border-radius: 20px; box-shadow: 0 0 20px #0ff; }
 </style>
-<h1>Сайт готов к работе!</h1></textarea>
+<h1>Новый сайт на TatarHost</h1></textarea>
     </section>
 
-    <!-- 3. Превью -->
-    <section class="panel" id="tab-preview">
-        <div class="panel-header">Live View</div>
-        <iframe id="viewer"></iframe>
+    <!-- ПАНЕЛЬ 3: ПРЕВЬЮ -->
+    <section class="panel" id="tab-view">
+        <div class="panel-header">Предпросмотр</div>
+        <iframe id="preview"></iframe>
     </section>
 
-    <!-- 4. ИИ Чат -->
+    <!-- ПАНЕЛЬ 4: ИИ -->
     <section class="panel" id="tab-ai">
-        <div class="panel-header">AI Helper</div>
-        <div class="chat-messages" id="chat">
-            <div class="msg ai-msg">Привет! Я помогу тебе с кодом.</div>
+        <div class="panel-header">AI Ассистент</div>
+        <div class="chat-box" id="chat">
+            <div class="msg ai">Привет! Я помогу тебе наполнить сайт контентом. Что хочешь создать?</div>
         </div>
-        <div class="chat-input">
-            <input type="text" id="ai-input" placeholder="Напиши код...">
-            <button onclick="askAI()" style="background:var(--accent); border:none; border-radius:10px; padding:10px;">➜</button>
+        <div style="padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px;">
+            <input type="text" id="ai-in" placeholder="Запрос...">
+            <button onclick="askAI()" style="background:var(--accent); border:none; border-radius:8px; padding:0 15px;">➜</button>
         </div>
     </section>
 
 </main>
 
 <nav class="mobile-nav">
-    <div class="tab-btn active" onclick="showTab('tab-tools', this)"><span>⚙️</span>ИНФО</div>
-    <div class="tab-btn" onclick="showTab('tab-editor', this)"><span>📝</span>КОД</div>
-    <div class="tab-btn" onclick="showTab('tab-preview', this)"><span>👁️</span>ВИД</div>
-    <div class="tab-btn" onclick="showTab('tab-ai', this)"><span>🤖</span>ИИ</div>
+    <div class="tab-btn active" onclick="switchTab('tab-info', this)"><span>⚙️</span>ИНФО</div>
+    <div class="tab-btn" onclick="switchTab('tab-code', this)"><span>📝</span>КОД</div>
+    <div class="tab-btn" onclick="switchTab('tab-view', this)"><span>👁️</span>ВИД</div>
+    <div class="tab-btn" onclick="switchTab('tab-ai', this)"><span>🤖</span>ИИ</div>
 </nav>
 
 <script>
     const API_KEY = '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';
+    const BASE_URL = 'https://tatarhost.github.io/_/';
 
-    function run() {
+    function render() {
         const code = document.getElementById('editor').value;
-        const viewer = document.getElementById('viewer').contentWindow.document;
-        viewer.open(); viewer.write(code); viewer.close();
+        const frame = document.getElementById('preview').contentWindow.document;
+        frame.open(); frame.write(code); frame.close();
     }
-    run();
+    render();
 
-    function showTab(id, btn) {
+    function updateLinkHint() {
+        const name = document.getElementById('project-name').value;
+        document.getElementById('link-hint').innerText = `Ссылка: ${BASE_URL}${name}`;
+    }
+
+    function switchTab(id, el) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-tab'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active-tab');
-        btn.classList.add('active');
+        el.classList.add('active');
     }
 
     function toggleFS() {
@@ -216,38 +180,34 @@
         else document.exitFullscreen();
     }
 
-    // ЛОГИКА ПУБЛИКАЦИИ И КОПИРОВАНИЯ
+    // ГЛАВНАЯ ЛОГИКА ПУБЛИКАЦИИ
     function publish() {
-        const siteId = document.getElementById('site-id').value;
-        // Генерируем ссылку (в твоем случае это будет домен гитхаба)
-        const fakeLink = `https://your-username.github.io/${siteId}`;
+        const name = document.getElementById('project-name').value.trim();
+        if(!name) { alert("Введите имя проекта!"); return; }
+
+        const finalUrl = BASE_URL + name + "/";
         
-        const resultBox = document.getElementById('result-box');
-        const linkLabel = document.getElementById('final-link');
-        
-        resultBox.style.display = 'block';
-        linkLabel.innerText = fakeLink;
-        
-        alert("Сайт успешно опубликован на GitHub!");
+        // Показываем карточку результата
+        document.getElementById('result-card').style.display = 'block';
+        document.getElementById('final-url').innerText = finalUrl;
+        document.getElementById('visit-link').href = finalUrl;
+
+        alert("Успешно! Сайт будет создан в папке: " + name);
     }
 
-    function copyToClipboard() {
-        const link = document.getElementById('final-link').innerText;
-        navigator.clipboard.writeText(link).then(() => {
-            const btn = document.querySelector('.copy-btn');
-            btn.innerText = "СКОПИРОВАНО!";
-            btn.style.background = "#fff";
-            setTimeout(() => {
-                btn.innerText = "КОПИРОВАТЬ ССЫЛКУ";
-                btn.style.background = "var(--success)";
-            }, 2000);
+    function copyLink() {
+        const url = document.getElementById('final-url').innerText;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Ссылка скопирована!");
         });
     }
 
     async function askAI() {
-        const inp = document.getElementById('ai-input');
-        const q = inp.value; if(!q) return;
-        addMsg(q, 'user-msg'); inp.value = '';
+        const inp = document.getElementById('ai-in');
+        if(!inp.value) return;
+        addMsg(inp.value, 'user');
+        const q = inp.value; inp.value = '';
+        
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -258,15 +218,15 @@
                 })
             });
             const data = await res.json();
-            addMsg(data.choices[0].message.content, 'ai-msg');
-        } catch(e) { addMsg("Ошибка API", "ai-msg"); }
+            addMsg(data.choices[0].message.content, 'ai');
+        } catch(e) { addMsg("Ошибка API", "ai"); }
     }
 
     function addMsg(t, c) {
-        const chat = document.getElementById('chat');
+        const b = document.getElementById('chat');
         const m = document.createElement('div'); m.className = 'msg ' + c;
-        m.innerText = t; chat.appendChild(m);
-        chat.scrollTop = chat.scrollHeight;
+        m.innerText = t; b.appendChild(m);
+        b.scrollTop = b.scrollHeight;
     }
 </script>
 
