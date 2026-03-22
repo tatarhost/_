@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cloud Studio Ultra | Fullscreen Edition</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #00f2ff;
+            --purple: #7000ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: var(--bg);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .glow-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+            z-index: -1;
+        }
+
+        header {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .logo { font-weight: 900; font-size: 1.2rem; background: linear-gradient(90deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Кнопка Fullscreen */
+        .fs-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fs-btn:hover {
+            background: var(--accent);
+            color: black;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        /* ОСНОВНАЯ СЕТКА */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 1fr 320px;
+            gap: 12px;
+            padding: 12px;
+            height: calc(100vh - 60px);
+            flex: 1;
+        }
+
+        .panel {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .panel-header {
+            padding: 12px 15px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #00f2ff;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            outline: none;
+            resize: none;
+            line-height: 1.5;
+        }
+
+        iframe { flex: 1; background: #fff; border: none; }
+
+        /* Чат */
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; line-height: 1.4; }
+        .user-msg { background: var(--accent); color: #000; align-self: flex-end; }
+        .ai-msg { background: rgba(255,255,255,0.05); border: 1px solid var(--border); align-self: flex-start; }
+
+        .chat-input { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .chat-input input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 10px; outline: none; }
+
+        /* Табы для мобилок */
+        .mobile-nav {
+            display: none;
+            height: 70px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn { color: #555; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .tab-btn.active { color: var(--accent); }
+
+        /* Оптимизация */
+        @media (max-width: 1100px) {
+            .main-layout { grid-template-columns: 1fr; padding-bottom: 80px; }
+            .panel { display: none; }
+            .panel.active-tab { display: flex; }
+            .mobile-nav { display: flex; }
+        }
+
+        .pub-btn {
+            background: linear-gradient(45deg, var(--accent), var(--purple));
+            color: #000; font-weight: bold; border: none; padding: 14px;
+            border-radius: 12px; cursor: pointer; margin: 15px; transition: 0.3s;
+        }
+        .pub-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+
+<header>
+    <div class="logo">CLOUD_STUDIO v3</div>
+    <div class="header-controls">
+        <button class="fs-btn" id="fs-toggle" onclick="toggleFS()">
+            <span id="fs-icon">⛶</span> <span id="fs-text">Экран</span>
+        </button>
+        <div id="ai-status" style="font-size: 10px; color: lime;">● ONLINE</div>
+    </div>
+</header>
+
+<main class="main-layout" id="workspace">
+    
+    <!-- 1. Настройки -->
+    <aside class="panel active-tab" id="tab-tools">
+        <div class="panel-header">Конфигурация сайта</div>
+        <div style="padding: 20px; flex: 1;">
+            <label style="font-size: 11px; color: var(--accent);">ID ПРОЕКТА</label>
+            <input type="text" id="site-name" value="new-ai-project" style="width: 100%; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px;">
+            
+            <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; margin-top: 10px;">
+                <p style="font-size: 12px; color: #888;">🚀 Публикация будет выполнена через GitHub API на ваш поддомен.</p>
+            </div>
+        </div>
+        <button class="pub-btn" onclick="publish()">ОПУБЛИКОВАТЬ НА GITHUB</button>
+    </aside>
+
+    <!-- 2. Редактор кода -->
+    <section class="panel" id="tab-editor">
+        <div class="panel-header">index.html <span>HTML / CSS</span></div>
+        <textarea id="editor" oninput="run()" spellcheck="false">
+<style>
+  body { 
+    background: #000; 
+    color: white; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    font-family: 'Inter', sans-serif;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+  }
+  h1 { color: #00f2ff; text-shadow: 0 0 20px #00f2ff; }
+</style>
+
+<div class="glass-card">
+  <h1>Project Ready</h1>
+  <p>Created in AI Cloud Studio</p>
+</div></textarea>
+    </section>
+
+    <!-- 3. Предпросмотр -->
+    <section class="panel" id="tab-preview">
+        <div class="panel-header">Результат <span>Live View</span></div>
+        <iframe id="viewer"></iframe>
+    </section>
+
+    <!-- 4. ИИ Чат -->
+    <section class="panel" id="tab-ai">
+        <div class="panel-header">AI Step-3.5 <span>Flash</span></div>
+        <div class="chat-messages" id="chat">
+            <div class="msg ai-msg">Привет! Я помогу тебе с кодом. Попроси меня создать что угодно!</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="ai-input" placeholder="Напиши код для...">
+            <button onclick="askAI()" style="background:var(--accent); border:none; border-radius:10px; padding:0 15px; cursor:pointer; font-weight:bold;">➜</button>
+        </div>
+    </section>
+
+</main>
+
+<nav class="mobile-nav">
+    <div class="tab-btn active" onclick="showTab('tab-tools', this)"><span>⚙️</span>ИНФО</div>
+    <div class="tab-btn" onclick="showTab('tab-editor', this)"><span>📝</span>КОД</div>
+    <div class="tab-btn" onclick="showTab('tab-preview', this)"><span>👁️</span>ВИД</div>
+    <div class="tab-btn" onclick="showTab('tab-ai', this)"><span>🤖</span>ИИ</div>
+</nav>
+
+<script>
+    const API_KEY = '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';
+
+    function run() {
+        const code = document.getElementById('editor').value;
+        const viewer = document.getElementById('viewer').contentWindow.document;
+        viewer.open();
+        viewer.write(code);
+        viewer.close();
+    }
+    run();
+
+    function showTab(tabId, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-tab'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active-tab');
+        btn.classList.add('active');
+    }
+
+    // ЛОГИКА ПОЛНОГО ЭКРАНА
+    function toggleFS() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`Ошибка: ${err.message}`);
+            });
+            document.getElementById('fs-text').innerText = 'Выход';
+            document.getElementById('fs-icon').innerText = '⤦';
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+                document.getElementById('fs-text').innerText = 'Экран';
+                document.getElementById('fs-icon').innerText = '⛶';
+            }
+        }
+    }
+
+    async function askAI() {
+        const inp = document.getElementById('ai-input');
+        const chat = document.getElementById('chat');
+        const q = inp.value;
+        if(!q) return;
+
+        addMsg(q, 'user-msg');
+        inp.value = '';
+        document.getElementById('ai-status').innerText = '● THINKING';
+
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "stepfun/step-3.5-flash:free",
+                    "messages": [{"role": "system", "content": "Ты эксперт HTML/CSS. Пиши только код."}, {"role": "user", "content": q}]
+                })
+            });
+            const data = await res.json();
+            addMsg(data.choices[0].message.content, 'ai-msg');
+        } catch(e) {
+            addMsg("Ошибка API. Проверьте ключ.", "ai-msg");
+        } finally {
+            document.getElementById('ai-status').innerText = '● ONLINE';
+        }
+    }
+
+    function addMsg(text, cls) {
+        const chat = document.getElementById('chat');
+        const m = document.createElement('div');
+        m.className = 'msg ' + cls;
+        m.innerText = text;
+        chat.appendChild(m);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function publish() {
+        const name = document.getElementById('site-name').value;
+        alert(`Готово к публикации!\nПроект: ${name}\n\nСайт будет доступен по адресу:\nhttps://ваш-логин.github.io/${name}`);
+    }
+</script>
+
+</body>
+</html>
